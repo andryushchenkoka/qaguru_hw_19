@@ -11,18 +11,38 @@ repositories {
     mavenCentral()
 }
 
+allure{
+    report{
+        version.set("2.19.0")
+    }
+    adapter{
+        aspectjWeaver.set(true)
+        frameworks{
+            junit5{
+                adapterVersion.set("2.19.0")
+            }
+        }
+    }
+}
+
 dependencies {
-    testImplementation(
-            "org.junit.jupiter:junit-jupiter:5.9.1",
+    implementation(
             "com.codeborne:selenide:6.11.1",
-            "io.rest-assured:rest-assured:5.3.0",
-            "org.assertj:assertj-core:3.23.1",
-            "org.aspectj:aspectjweaver:1.9.19",
-            "org.projectlombok:lombok:1.18.24",
             "com.fasterxml.jackson.core:jackson-databind:2.14.1",
             "io.qameta.allure:allure-selenide:2.20.1",
-            "io.qameta.allure:allure-rest-assured:2.20.1",
+            "io.qameta.allure:allure-rest-assured:2.20.1"
+    )
+    testImplementation(
+            "org.junit.jupiter:junit-jupiter:5.9.1",
+            "io.rest-assured:rest-assured:5.3.0",
+            "org.assertj:assertj-core:3.23.1",
             "org.slf4j:slf4j-simple:2.0.5"
+    )
+    runtimeOnly(
+            "org.aspectj:aspectjweaver:1.9.19"
+    )
+    compileOnly(
+            "org.projectlombok:lombok:1.18.24"
     )
 }
 
