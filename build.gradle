@@ -1,0 +1,41 @@
+plugins {
+    id 'java-library'
+    id 'io.qameta.allure' version '2.10.0'
+    id 'io.freefair.lombok' version '6.0.0-m2'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation(
+            "org.junit.jupiter:junit-jupiter:5.9.1",
+            "com.codeborne:selenide:6.11.1",
+            "io.rest-assured:rest-assured:5.3.0",
+            "org.assertj:assertj-core:3.23.1",
+            "org.aspectj:aspectjweaver:1.9.19",
+            "org.projectlombok:lombok:1.18.24",
+            "com.fasterxml.jackson.core:jackson-databind:2.14.1",
+            "io.qameta.allure:allure-selenide:2.20.1",
+            "io.qameta.allure:allure-rest-assured:2.20.1",
+            "org.slf4j:slf4j-simple:2.0.5"
+    )
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+    systemProperties(System.getProperties())
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+test {
+    useJUnitPlatform()
+}
+
