@@ -1,7 +1,6 @@
 package tests;
 
 import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -13,8 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Cookie;
 import pages.InfoPage;
 
-import static com.codeborne.selenide.Selenide.*;
-import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 
@@ -40,6 +37,7 @@ public class DemowebshopTests {
 
         String userEmail = "kirill_a@mail.ru",
                 userPassword = "qwerty";
+        InfoPage infoPage = new InfoPage();
 
         step("Успешная вторизация с использованием cookies", () -> {
 
@@ -54,17 +52,15 @@ public class DemowebshopTests {
                     .extract().cookie("NOPCOMMERCE.AUTH");
 
             step("Открыть страницу сервиса", () -> {
-                open("/customer/info");
+                infoPage.openPage();
             });
 
             step("Загрузить cookie авторизации", () -> {
-                getWebDriver().manage().addCookie(new Cookie("NOPCOMMERCE.AUTH", authCookie));
-                refresh();
+                infoPage.addCookies(new Cookie("NOPCOMMERCE.AUTH", authCookies));
             });
 
             step("Проверка успешной авторизации (UI)", () -> {
-                String userLoginActualUI = $(".header-links .account").getText();
-                Assertions.assertEquals(userEmail, userLoginActualUI);
+                Assertions.assertEquals(userEmail, infoPage.getProfileName());
             });
 
             step("Проверка успешной авторизации (API)", () -> {
