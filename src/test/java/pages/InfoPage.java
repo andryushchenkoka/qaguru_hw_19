@@ -1,15 +1,13 @@
 package pages;
 
-import com.codeborne.selenide.SelenideElement;
 import cookies.AuthCookie;
 import org.openqa.selenium.Cookie;
+import pages.components.Header;
 
 import static com.codeborne.selenide.Selenide.*;
 
 public class InfoPage {
 
-    private final SelenideElement wishlistQuantity = $("span.wishlist-qty"),
-            profileName = $(".header-links .account");
     private final String URL = "/customer/info";
 
     public InfoPage openPageWithCookies(Cookie cookie) {
@@ -34,11 +32,10 @@ public class InfoPage {
     }
 
     public int getWishQuantity() {
-        String strQuantity = wishlistQuantity.getText().replaceAll("\\D", "");
-        return Integer.parseInt(strQuantity);
+        return Header.getWishQuantity();
     }
 
     public String getProfileName() {
-        return profileName.getText();
+        return Header.getProfileName();
     }
 }

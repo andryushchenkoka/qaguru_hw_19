@@ -1,6 +1,8 @@
 package tests;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.ElementsCollection;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -11,8 +13,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Cookie;
 import pages.InfoPage;
+import pages.components.Header;
 
+import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 import static io.qameta.allure.Allure.step;
+import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
 
 public class DemowebshopTests {
@@ -27,6 +33,7 @@ public class DemowebshopTests {
     public static void beforeAll() {
         RestAssured.baseURI = URL;
         Configuration.baseUrl = URL;
+        Configuration.browserSize = "1920x1080";
 
         RestAssured.filters(new AllureRestAssured());
     }
@@ -56,7 +63,7 @@ public class DemowebshopTests {
             });
 
             step("Загрузить cookie авторизации", () -> {
-                infoPage.addCookies(new Cookie("NOPCOMMERCE.AUTH", authCookies));
+                infoPage.addCookies(new Cookie("NOPCOMMERCE.AUTH", authCookie));
             });
 
             step("Проверка успешной авторизации (UI)", () -> {
@@ -115,6 +122,43 @@ public class DemowebshopTests {
             infoPage.refreshPage();
             wishCountActual = infoPage.getWishQuantity();
             Assertions.assertEquals(wishCountActual - wishCountOld, 1);
+        });
+    }
+
+    // ДОПОЛНИТЕЛЬНОЕ ЗАДАНИЕ: через UI проверить добавление продукта в виш-лист
+    @Test
+    @DisplayName("UI - Добавление товара в виш-лист")
+    public void addToWishListUI() {
+
+        String productUrl = "/black-white-diamond-heart";
+
+        step("Авторизоваться в личном кабинете", () -> {
+            open(productUrl);
+            getWebDriver().manage().addCookie(new Cookie("NOPCOMMERCE.AUTH", authCookies));
+            refresh();
+        });
+
+        step("Проверка добавления товара в виш-лист", () -> {
+            int wishCountOld, wishCountActual;
+
+            wishCountOld = Header.getWishQuantity();
+
+            step("Добавить товар в виш-лист", () -> {
+                $("input[value='Add to wishlist']").click();
+            });
+
+            step("Перейти на страницу виш-листа", () -> {
+                $(".header-links .ico-wishlist").click();
+            });
+
+            wishCountActual = Header.getWishQuantity();
+
+            step("Проверить наличие добавленного товара в виш=листе", () -> {
+                ElementsCollection wishlist = $$(".cart-item-row .product a")
+                        .filter(Condition.attribute("href", baseURI + productUrl));
+                Assertions.assertEquals(1, wishlist.size());
+                Assertions.assertEquals(1, wishCountActual - wishCountOld);
+            });
         });
     }
 }
