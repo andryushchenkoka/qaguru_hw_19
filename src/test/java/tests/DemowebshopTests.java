@@ -1,8 +1,6 @@
 package tests;
 
-import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.ElementsCollection;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -14,6 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Cookie;
 import pages.InfoPage;
 import pages.components.Header;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.*;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
@@ -154,9 +155,9 @@ public class DemowebshopTests {
             wishCountActual = Header.getWishQuantity();
 
             step("Проверить наличие добавленного товара в виш=листе", () -> {
-                ElementsCollection wishlist = $$(".cart-item-row .product a")
-                        .filter(Condition.attribute("href", baseURI + productUrl));
-                Assertions.assertEquals(1, wishlist.size());
+                List<String> wishlist = $$(".cart-item-row .product a")
+                        .stream().map(x -> x.getAttribute("href").toString()).collect(Collectors.toList());
+                Assertions.assertTrue(wishlist.contains(baseURI + productUrl));
                 Assertions.assertEquals(1, wishCountActual - wishCountOld);
             });
         });
